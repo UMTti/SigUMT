@@ -39,7 +39,7 @@ int main(int argc, char *argv[] ){
 		ticks = time(NULL);
 		snprintf(sendBuff, sizeof(sendBuff), "This is SigUMT server. Commands: send \n");
 		write(connfd, sendBuff, strlen(sendBuff));
-		char* ptr;
+		char* ptr = malloc(15);
 		read_from_socket(connfd, ptr);
 
 		close(connfd);
@@ -48,15 +48,38 @@ int main(int argc, char *argv[] ){
 
 }
 
+void handle_input(char* ptr){
+	printf("ptr on %s", ptr);
+	if(compare_strings("send", ptr)){
+		printf("User wants to send something\n");
+	} else {
+		printf("Not defined command\n");
+	}
+
+}
+
+int compare_strings(char* str1, char* str2){
+	unsigned int i;
+	for(i = 0;i<strlen(str1);i++){
+		if(str1[i] != str2[i]){
+			return 0;
+		}
+	}
+	return 1;
+}
+
 void read_from_socket(int connfd, char* ptr){
 	int status;
-	char result[1024];
-	
+	char* result = malloc(15);
+	memset(result, '\0', sizeof(result));	
 	status = read(connfd, result, sizeof(result));
 	if(status < 0){
 		error("Error in reading.");
 		exit(0);
 	}
 	printf("read: %s", result);
-	ptr = result;
+	printf("%s on result\n", result);
+	strcpy(ptr, result);
+	ptr[14] = '\0';
+	handle_input(ptr);
 }
