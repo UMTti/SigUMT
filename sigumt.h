@@ -1,1 +1,1 @@
-void read_from_socket(int);
+void read_from_socket(int, char*);

@@ -37,9 +37,10 @@ int main(int argc, char *argv[] ){
 			error("Error in server.");
 		}
 		ticks = time(NULL);
-		snprintf(sendBuff, sizeof(sendBuff), "This is SigUMT server. Commands: send, \n");
+		snprintf(sendBuff, sizeof(sendBuff), "This is SigUMT server. Commands: send \n");
 		write(connfd, sendBuff, strlen(sendBuff));
-		read_from_socket(connfd);
+		char* ptr;
+		read_from_socket(connfd, ptr);
 
 		close(connfd);
 		sleep(1);
@@ -47,7 +48,7 @@ int main(int argc, char *argv[] ){
 
 }
 
-void read_from_socket(int connfd){
+void read_from_socket(int connfd, char* ptr){
 	int status;
 	char result[1024];
 	
@@ -57,4 +58,5 @@ void read_from_socket(int connfd){
 		exit(0);
 	}
 	printf("read: %s", result);
+	ptr = result;
 }
