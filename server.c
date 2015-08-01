@@ -15,7 +15,7 @@ int main(int argc, char *argv[] ){
 	int listenfd = 0, connfd = 0;
 	struct sockaddr_in serv_addr;
 	char sendBuff[5000];
-	
+
 	time_t ticks;
 	listenfd = socket(AF_INET, SOCK_STREAM, 0);
 
@@ -24,7 +24,7 @@ int main(int argc, char *argv[] ){
 
 	serv_addr.sin_family = AF_INET; // should be always set to this
 	serv_addr.sin_addr.s_addr = htonl(INADDR_ANY); //ip addr of a host server 
-	serv_addr.sin_port = htons(5000);
+	serv_addr.sin_port = htons(5000);        // Port number
 
 	bind(listenfd, (struct sockaddr*)&serv_addr, sizeof(serv_addr));
 
@@ -36,7 +36,7 @@ int main(int argc, char *argv[] ){
 		if(connfd < 0) {
 			error("Error in server.");
 		}
-		ticks = time(NULL);
+		ticks = time(NULL);  // what is this
 		snprintf(sendBuff, sizeof(sendBuff), "This is SigUMT server. Commands: send \n");
 		write(connfd, sendBuff, strlen(sendBuff));
 		char* ptr = malloc(15);
@@ -50,18 +50,18 @@ int main(int argc, char *argv[] ){
 
 void handle_input(char* ptr){
 	printf("ptr on %s", ptr);
-	if(compare_strings("send", ptr)){
-		printf("User wants to send something\n");
+	if(contains_word(ptr, "send")){
+		printf("User wants to send something \n");
 	} else {
 		printf("Not defined command\n");
 	}
 
 }
 
-int compare_strings(char* str1, char* str2){
+int contains_word(char* base, char* word){
 	unsigned int i;
-	for(i = 0;i<strlen(str1);i++){
-		if(str1[i] != str2[i]){
+	for(i=0;i<strlen(word);i++){
+		if(base[i] != word[i]){
 			return 0;
 		}
 	}
@@ -70,7 +70,7 @@ int compare_strings(char* str1, char* str2){
 
 void read_from_socket(int connfd, char* ptr){
 	int status;
-	char* result = malloc(15);
+	char* result = malloc(20);
 	memset(result, '\0', sizeof(result));	
 	status = read(connfd, result, sizeof(result));
 	if(status < 0){
