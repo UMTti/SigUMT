@@ -56,10 +56,34 @@ void handle_input(int connfd, char* ptr){
 		int bytes = get_bytes(ptr, 5);
 		snprintf(sendBuff, sizeof(sendBuff), "Please send %d bytes data now.\n", bytes);
 		write(connfd, sendBuff, strlen(sendBuff));
+		char* datapointer = malloc(bytes);
+		read_data(connfd, bytes, datapointer);
 	} else {
 		printf("Not defined command\n");
 	}
 
+}
+
+int read_data(int connfd, int byte_amount, char* datapointer){
+	int status;
+	int l = strlen(datapointer);
+        char* result = malloc(l);
+        memset(result, '\0', sizeof(result));
+        status = read(connfd, result, sizeof(result));
+        if(status < 0){
+                error("Error in reading.");
+                exit(0);
+        }
+        strcpy(datapointer, result);
+        datapointer[l-1] = '\0';
+	write_to_socket("Data read successfully. \n", connfd);
+}
+
+void write_to_socket(char* text, int connfd){
+	int length = (int)strlen(text);
+	char sendBuff[length];
+	snprintf(sendBuff, sizeof(sendBuff), text, length);
+        write(connfd, sendBuff, strlen(sendBuff));
 }
 
 int get_bytes(char* ptr, int start_index){
@@ -92,7 +116,7 @@ int contains_word(char* base, char* word){
 void read_from_socket(int connfd, char* ptr){
 	int status;
 	char* result = malloc(20);
-	memset(result, '\0', sizeof(result));	
+	memset(result, '\0', sizeof(result));
 	status = read(connfd, result, sizeof(result));
 	if(status < 0){
 		error("Error in reading.");
