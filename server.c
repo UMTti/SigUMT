@@ -48,14 +48,35 @@ int main(int argc, char *argv[] ){
 
 }
 
-void handle_input(char* ptr){
+void handle_input(int connfd, char* ptr){
+	char sendBuff[5000];
 	printf("ptr on %s", ptr);
 	if(contains_word(ptr, "send")){
 		printf("User wants to send something \n");
+		int bytes = get_bytes(ptr, 5);
+		snprintf(sendBuff, sizeof(sendBuff), "Please send %d bytes data now.\n", bytes);
+		write(connfd, sendBuff, strlen(sendBuff));
 	} else {
 		printf("Not defined command\n");
 	}
 
+}
+
+int get_bytes(char* ptr, int start_index){
+	if(start_index<0) return -1;
+	int i = start_index;
+	char* length = malloc(15);
+	int a = 0;
+	while(i<strlen(ptr)){
+		if(ptr[i] == ' '){
+			return atoi(length);
+		} else {
+			length[a] = ptr[i];
+		}
+		i++;
+		a++;
+	}
+	return atoi(length);
 }
 
 int contains_word(char* base, char* word){
@@ -77,9 +98,7 @@ void read_from_socket(int connfd, char* ptr){
 		error("Error in reading.");
 		exit(0);
 	}
-	printf("read: %s", result);
-	printf("%s on result\n", result);
 	strcpy(ptr, result);
 	ptr[14] = '\0';
-	handle_input(ptr);
+	handle_input(connfd, ptr);
 }
